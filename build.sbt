@@ -106,6 +106,7 @@ def testServerSettings(config: Configuration) = Seq(
 
 val akkaHttp = "com.typesafe.akka" %% "akka-http" % "10.1.7"
 val akkaStreams = "com.typesafe.akka" %% "akka-stream" % "2.5.19"
+val playAhcWsStandalone = "com.typesafe.play" %% "play-ahc-ws-standalone" % "1.1.12"
 
 val scalaTestVersion = "3.0.5"
 val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion
@@ -141,8 +142,9 @@ lazy val rootJVM = project
     asyncHttpClientMonixBackend,
     asyncHttpClientCatsBackend,
     asyncHttpClientFs2Backend,
-    okhttpBackend,
+        okhttpBackend,
     okhttpMonixBackend,
+    playWsStandaloneBackend,
     jsonCommonJVM,
     circeJVM,
     json4s,
@@ -336,6 +338,16 @@ def okhttpBackendProject(proj: String): Project = {
 lazy val okhttpMonixBackend: Project =
   okhttpBackendProject("monix")
     .dependsOn(monixJVM % "compile->compile;test->test")
+
+lazy val playWsStandaloneBackend: Project = (project in file("play-ws-standalone-backend"))
+  .settings(commonJvmSettings: _*)
+  .settings(
+    name := "play-ws-standalone-backend",
+    libraryDependencies ++= Seq(
+      playAhcWsStandalone,
+    )
+  )
+  .dependsOn(coreJVM % "compile->compile;test->test")
 
 lazy val jsonCommon = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
